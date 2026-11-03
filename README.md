@@ -7,9 +7,15 @@ to right; this is a basic calculator, not an expression parser.
 
 ## Verification status
 
-Initial implementation. Public repository, GitHub Actions execution, Vercel
-deployment, and screenshots have not yet been verified. This section will be
-updated with real evidence as setup progresses.
+- Public repository: https://github.com/tsurts/university-devops-calculator
+- Production application: https://university-devops-calculator.vercel.app
+- Local unit tests: 9 passed, 0 failed.
+- Local build: successful.
+- Local and production HTTP/content health checks: PASS.
+- GitHub Actions execution and pipeline screenshots: pending verification.
+
+The first production deployment was made locally from the tested build artifact.
+A successful local deployment is not evidence of a successful Actions pipeline.
 
 ## Run locally
 
@@ -95,7 +101,11 @@ and merge to release. Secrets are only used by the Deploy job on push or manual 
 
 ## Screenshots and evidence
 
-Screenshots must come from actual executions. No screenshots have been captured yet.
+Local browser screenshot captured from the running application:
+
+![Calculator running locally](docs/screenshots/calculator-local.png)
+
+Pipeline and deployed-application evidence still need to be captured.
 Required evidence to add before submission:
 
 - Successful GitHub Actions run showing Build, Test, and Deploy.

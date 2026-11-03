@@ -64,7 +64,7 @@ jobs:
           name: vercel-output
           path: .vercel/output
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@65.10.0
       - name: Deploy tested artifact
         id: deploy
         shell: bash
@@ -73,9 +73,10 @@ jobs:
             echo "::error::Configure VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID in repository Actions secrets."
             exit 1
           fi
-          args=(--prebuilt --yes --token "$VERCEL_TOKEN")
+          args=(--prebuilt --yes --json --token "$VERCEL_TOKEN")
           if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then args+=(--prod); fi
-          url=$(vercel deploy "${args[@]}")
+          vercel deploy "${args[@]}" > deployment.json
+          url=$(node --input-type=module -e 'import fs from "node:fs"; const r = JSON.parse(fs.readFileSync("deployment.json", "utf8")); if (r.status !== "ok" || r.deployment?.readyState !== "READY") throw new Error("Deployment not ready"); console.log(r.deployment.productionUrl || r.deployment.url);')
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployment: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Check deployed application
