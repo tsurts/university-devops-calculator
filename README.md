@@ -12,6 +12,7 @@ to right; this is a basic calculator, not an expression parser.
 - Local unit tests: 9 passed, 0 failed.
 - Local build: successful.
 - Local and production HTTP/content health checks: PASS.
+- Live browser checks: 9 passed (buttons, decimals, error handling, sign, backspace, keyboard).
 - GitHub Actions execution and pipeline screenshots: pending verification.
 
 The first production deployment was made locally from the tested build artifact.
@@ -75,7 +76,7 @@ secrets in GitHub Settings → Secrets and variables → Actions:
 | VERCEL_ORG_ID | Account/team ID from linked project settings |
 | VERCEL_PROJECT_ID | Vercel project ID |
 
-Do not commit tokens or .vercel/project.json. The CLI uses these secret values
+Do not commit tokens or .vercel/project.json. Vercel CLI is pinned to the locally verified version 65.10.0. The workflow parses its JSON result and requires READY status. The CLI uses these secret values
 to select the project. If Vercel deployment protection is enabled, configure
 preview access for the health checker before requiring preview checks.
 Disable Vercel's independent Git auto-deployments if connecting the same repository:
@@ -101,11 +102,14 @@ and merge to release. Secrets are only used by the Deploy job on push or manual 
 
 ## Screenshots and evidence
 
-Local browser screenshot captured from the running application:
+Production screenshot captured from https://university-devops-calculator.vercel.app
+after exercising the actual calculator buttons:
 
-![Calculator running locally](docs/screenshots/calculator-local.png)
+![Production calculator showing 0.1 + 0.2 = 0.3](docs/screenshots/calculator-production.png)
 
-Pipeline and deployed-application evidence still need to be captured.
+[Local browser screenshot](docs/screenshots/calculator-local.png)
+
+Pipeline and unit-test screenshots still need to be captured.
 Required evidence to add before submission:
 
 - Successful GitHub Actions run showing Build, Test, and Deploy.
