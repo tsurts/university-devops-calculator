@@ -171,8 +171,8 @@ and [exported output](docs/evidence/unit-tests.txt).
 
 ### Running application
 
-Captured from https://university-devops-calculator.vercel.app after exercising
-the calculator buttons; the display shows 0.1 + 0.2 = 0.3.
+Captured from https://university-devops-calculator.vercel.app during the final
+browser check. The calculators independently show 0.1 + 0.2 = 0.3 and 9 / 3 = 3.
 
 ![Two independently working calculators](docs/screenshots/calculator.png)
 
