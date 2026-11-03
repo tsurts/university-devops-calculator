@@ -1,134 +1,203 @@
 # DevOps Calculator
 
-A responsive HTML/CSS/JavaScript calculator for a university DevOps assignment.
-Supports addition, subtraction, multiplication, division, decimal numbers, negative
-numbers, clearing, backspace, and keyboard input. Operations evaluate from left
-to right; this is a basic calculator, not an expression parser.
+[![Calculator CI/CD](https://github.com/tsurts/university-devops-calculator/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/tsurts/university-devops-calculator/actions/workflows/ci-cd.yml)
 
-## Verification status
+A responsive HTML/CSS/JavaScript calculator built for a university DevOps
+assignment. Supports addition, subtraction, multiplication, division, decimals,
+negative numbers, backspace, and keyboard input. Operations evaluate from left
+to right, as on a basic calculator.
 
-- Public repository: https://github.com/tsurts/university-devops-calculator
-- Production application: https://university-devops-calculator.vercel.app
-- Local unit tests: 9 passed, 0 failed.
-- Local build: successful.
-- Local and production HTTP/content health checks: PASS.
-- Live browser checks: 9 passed (buttons, decimals, error handling, sign, backspace, keyboard).
-- GitHub Actions execution and pipeline screenshots: pending verification.
+- **Live application:** https://university-devops-calculator.vercel.app
+- **Public repository:** https://github.com/tsurts/university-devops-calculator
+- **Workflow:** [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
+- **Merged development PR:** [dev into main, #1](https://github.com/tsurts/university-devops-calculator/pull/1)
 
-The first production deployment was made locally from the tested build artifact.
-A successful local deployment is not evidence of a successful Actions pipeline.
+## Verified results
+
+Verified on 3 November 2026:
+
+| Requirement | Evidence |
+| --- | --- |
+| Working application | Live Vercel application; 9 browser interaction checks passed |
+| Unit tests | 13 passed, 0 failed locally and on GitHub |
+| Public GitHub repository | Repository link above |
+| main and dev branches | Both retained with meaningful application, test, CI, and documentation commits |
+| Separate Build, Test, Deploy jobs | [Successful production run](https://github.com/tsurts/university-devops-calculator/actions/runs/41619924998) |
+| Automatic push trigger | [Successful dev push run](https://github.com/tsurts/university-devops-calculator/actions/runs/41619705157) and production run |
+| Automatic pull-request trigger | [Successful PR run](https://github.com/tsurts/university-devops-calculator/actions/runs/41619711377); Deploy intentionally skipped |
+| Vercel deployment through CI | Production Deploy job passed and application health was verified |
+| Health-check script and .log | [Script](scripts/health-check.mjs), [actual CI log](docs/evidence/health-check.log) |
+| Documentation and screenshots | This README, workflow diagram, and screenshots below |
+
+The first development run exposed a difference between flat and nested Vercel
+CLI JSON responses. The parser was corrected, regression tests were added,
+and subsequent preview and production runs passed. The links above identify
+actual verified runs rather than assuming every historical run succeeded.
 
 ## Run locally
 
-Install Node.js 24 or newer and Git, then:
+Install Node.js 24 or newer and Git. Clone the repository, then run:
 
 ~~~sh
+git clone https://github.com/tsurts/university-devops-calculator.git
+cd university-devops-calculator
 npm ci
 npm test
 npm run build
 npm start
 ~~~
 
-Open http://127.0.0.1:3000. No application dependencies or framework are needed.
-The unit tests use Node's built-in test runner and cover all four operations,
-decimal precision, negative results, invalid inputs, overflow, and division by zero.
+Open http://127.0.0.1:3000.
 
-Keyboard: digits and decimal point, + - * /, Enter or = to calculate,
-Escape/Delete to clear, Backspace to remove the last digit.
+There are no application dependencies. Unit tests use Node's built-in test
+runner. Nine tests cover arithmetic, decimal precision, negative results,
+invalid inputs, overflow, and division by zero. Four additional regression
+tests cover deployment-response parsing.
 
-## CI/CD
+Use buttons or a keyboard: digits, decimal point, + - * /, Enter or = to
+calculate, Escape/Delete to clear, and Backspace to remove the last digit.
 
-The workflow is in [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml).
-Pushes and pull requests targeting main or dev automatically run it.
-Build and Test are separate jobs. Deploy waits for both to succeed.
-Pull requests run Build and Test and skip deployment, so untrusted PRs cannot
-access deployment credentials. Pushes to dev deploy a Vercel preview;
-pushes to main deploy production. Manual workflow dispatch is also available.
+## CI/CD workflow
 
-Build copies the static source to dist/ and generates Vercel's Build Output API
-artifact in .vercel/output/. The workflow uploads that artifact, and Deploy
-downloads and deploys the same files using vercel deploy --prebuilt.
+Pushes to main and dev, and pull requests targeting either branch, automatically
+trigger the workflow. Manual workflow dispatch is also supported.
+
+1. **Build:** checks out the commit, sets up Node.js 24, runs npm ci, and builds
+   static files into dist/ and a Vercel Build Output API artifact into
+   .vercel/output/. The artifact is uploaded for Deploy.
+2. **Test:** independently checks out the same commit, sets up Node.js 24,
+   runs npm ci, and runs all 13 unit tests.
+3. **Deploy:** waits for both jobs to succeed, downloads the built artifact,
+   and runs vercel deploy --prebuilt. Pushes to dev create preview deployments;
+   pushes to main publish production. A health check then verifies the returned
+   deployment URL. The deployment JSON and health-check log are uploaded as
+   the health-check-log artifact, including on failure when files exist.
+
+Pull requests run Build and Test and skip Deploy. They validate proposed changes
+without receiving deployment credentials. A later merge to main triggers the
+production deployment. A failed Build or Test prevents Deploy from running.
+A failed health check fails the Deploy job; automatic rollback is not implemented.
 
 ~~~mermaid
 flowchart TD
-    A[Push or pull request to main/dev] --> B[Build job: npm ci and npm run build]
-    A --> C[Test job: npm ci and npm test]
-    B --> D{Both successful and not a PR?}
-    C --> D
-    D -->|Yes| E[Deploy job: download artifact]
-    E --> F{Branch}
-    F -->|main| G[Vercel production]
-    F -->|dev| H[Vercel preview]
-    G --> I[HTTP and content health check]
-    H --> I
-    I --> J[Upload health-check.log]
-    D -->|PR| K[Deployment skipped]
+    A[Push or pull request to main/dev] --> B[Build job]
+    A --> C[Test job]
+    B --> B1[Build and upload static artifact]
+    C --> C1[Run 13 unit tests]
+    B1 --> D{Both passed?}
+    C1 --> D
+    D -->|No| X[Deployment blocked]
+    D -->|Yes| E{Pull request?}
+    E -->|Yes| F[Deploy skipped]
+    E -->|No| G[Deploy job downloads artifact]
+    G --> H{Branch}
+    H -->|main| I[Vercel production]
+    H -->|dev| J[Vercel preview]
+    I --> K[HTTP and content health check]
+    J --> K
+    K --> L[Upload deployment JSON and health-check.log]
 ~~~
 
-### Vercel configuration
+### Deployment configuration
 
-Create a Vercel project for this static application. Add these repository Actions
-secrets in GitHub Settings → Secrets and variables → Actions:
+The repository uses GitHub Actions to control delivery. Vercel CLI is pinned
+to version 65.10.0. The deployment parser supports flat and nested CLI results;
+the CLI exit code and HTTP/content health check determine deployment success.
+
+Configure these repository Actions secrets when reproducing the project:
 
 | Secret | Purpose |
 | --- | --- |
-| VERCEL_TOKEN | Vercel deployment token |
-| VERCEL_ORG_ID | Account/team ID from linked project settings |
+| VERCEL_TOKEN | Vercel token scoped to the deployment account/team |
+| VERCEL_ORG_ID | Vercel account/team ID |
 | VERCEL_PROJECT_ID | Vercel project ID |
 
-Do not commit tokens or .vercel/project.json. Vercel CLI is pinned to the locally verified version 65.10.0. The workflow parses its JSON result and requires READY status. The CLI uses these secret values
-to select the project. If Vercel deployment protection is enabled, configure
-preview access for the health checker before requiring preview checks.
-Disable Vercel's independent Git auto-deployments if connecting the same repository:
-GitHub Actions should control deployment after tests.
+The Vercel project uses no framework, npm run build as its build command,
+dist as its output directory, and Node.js 24. The CI pipeline deploys the
+prebuilt artifact instead of rebuilding on Vercel. Preview protection is
+disabled for this public demonstration so the HTTP checker can reach previews.
+An independent Vercel Git integration is not required or connected.
+
+Tokens, local environment files, .vercel/, dependencies, generated build
+output, and runtime logs are ignored by Git. The documentation includes one
+explicitly committed health-check log as assignment evidence.
 
 ## Health check
 
 ~~~sh
-npm run health-check -- https://YOUR-DEPLOYMENT.vercel.app
+npm run health-check -- https://university-devops-calculator.vercel.app
 ~~~
 
-Checks HTTP success and calculator HTML, retries up to five times, uses a
-15-second timeout per request, and appends UTC timestamped PASS/FAIL records
-to logs/health-check.log. Returns a nonzero exit code if unavailable.
-The Deploy job runs it automatically and preserves the log as an Actions artifact.
-This is a deployment check; continuous monitoring is not implemented.
+The script checks HTTP success and verifies the calculator's title and display
+element. It retries up to five times with a 15-second timeout per request.
+Each attempt appends a UTC timestamp, PASS/FAIL, attempt number, URL, status,
+content result, and duration to logs/health-check.log. Failure returns a nonzero
+exit code. Set APP_URL instead of the argument, or HEALTH_LOG to change the log path.
 
-## Branches and development
+[Production CI health log](docs/evidence/health-check.log):
 
-main is the production branch; dev is the integration branch.
-Make meaningful commits on dev, open a pull request to main, inspect CI,
-and merge to release. Secrets are only used by the Deploy job on push or manual runs.
+~~~text
+2026-11-03T10:31:46.201Z PASS attempt=1 url=https://university-devops-calculator.vercel.app/ status=200 content=valid duration_ms=276
+~~~
 
-## Screenshots and evidence
+Download fresh deployment evidence from the health-check-log artifact on any
+completed push workflow run. This checks deployment availability; continuous
+monitoring and a monitoring dashboard are not implemented.
 
-Production screenshot captured from https://university-devops-calculator.vercel.app
-after exercising the actual calculator buttons:
+## Screenshots
 
-![Production calculator showing 0.1 + 0.2 = 0.3](docs/screenshots/calculator-production.png)
+### Successful production pipeline
 
-[Local browser screenshot](docs/screenshots/calculator-local.png)
+Actual GitHub Actions page showing Build, Test, and Deploy all successful:
+[production run](https://github.com/tsurts/university-devops-calculator/actions/runs/41619924998).
 
-Pipeline and unit-test screenshots still need to be captured.
-Required evidence to add before submission:
+![Successful production Build, Test, and Deploy jobs](docs/screenshots/pipeline-production.png)
 
-- Successful GitHub Actions run showing Build, Test, and Deploy.
-- Expanded Test job showing passing unit tests.
-- Running deployed calculator with its Vercel URL visible.
+### Successful development pipeline
+
+[Preview run](https://github.com/tsurts/university-devops-calculator/actions/runs/41619705157).
+
+![Successful development Build, Test, and Deploy jobs](docs/screenshots/pipeline-preview.png)
+
+### Passing unit tests
+
+Screenshot of the actual exported GitHub Test job output, rendered for readability.
+The public GitHub web interface requires sign-in to view job logs.
+[Source job](https://github.com/tsurts/university-devops-calculator/actions/runs/41619515810/job/125861355848)
+and [exported output](docs/evidence/unit-tests.txt).
+
+![Actual CI unit-test output: 13 tests passed, zero failed](docs/screenshots/unit-tests.png)
+
+### Running application
+
+Captured from https://university-devops-calculator.vercel.app after exercising
+the calculator buttons; the display shows 0.1 + 0.2 = 0.3.
+
+![Running production calculator](docs/screenshots/calculator-production.png)
+
+## Branch workflow
+
+main is the production branch; dev is the integration branch. Develop and commit
+on dev, push to run preview CI, open a pull request into main, inspect the checks,
+then merge to release. Both branches are retained. The commit history records
+the application, tests and pipeline, deployment-parser fix, action updates,
+and verified documentation as meaningful changes.
 
 ## Project layout
 
-- src/: browser application and pure calculation module
-- test/: unit tests
+- src/: browser HTML, CSS, UI JavaScript, and pure calculation module
+- test/: arithmetic and deployment-response regression tests
 - scripts/build.mjs: static build and Vercel artifact
+- scripts/deployment-url.mjs: deployment-response parser
 - scripts/serve.mjs: local preview server
 - scripts/health-check.mjs: availability check and .log output
 - .github/workflows/ci-cd.yml: three-job pipeline
+- docs/screenshots/: actual application, pipeline, and test-output captures
+- docs/evidence/: exported test output and production health-check log
 
 ## Reference documentation
 
 - [Vercel CLI deployments](https://vercel.com/docs/cli/deploy)
 - [Vercel Build Output API](https://vercel.com/docs/build-output-api)
 - [Vercel with GitHub Actions](https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel)
-
-Optional monitoring dashboard and automatic rollback are not implemented.
+- [GitHub workflow syntax](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions)

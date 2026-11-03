@@ -1,0 +1,24 @@
+> devops-calculator@1.0.0 test
+> node --test
+
+✔ adds two numbers (0.569898ms)
+✔ subtracts and supports negative results (0.080361ms)
+✔ multiplies (0.094642ms)
+✔ divides (0.064658ms)
+✔ handles floating point decimals (0.082484ms)
+✔ rejects division by zero (0.245349ms)
+✔ rejects unsupported operators (0.096656ms)
+✔ rejects invalid inputs (0.116165ms)
+✔ rejects overflow (0.126821ms)
+✔ reads nested Vercel result and prefers production alias (0.683539ms)
+✔ reads flat CLI result with schemeless URL (0.131108ms)
+✔ does not require transient CLI readiness before HTTP health verification (0.162625ms)
+✔ rejects error, missing URL and unexpected host (0.248584ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 67.607579
