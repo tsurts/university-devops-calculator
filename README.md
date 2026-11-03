@@ -29,11 +29,6 @@ Verified on 3 November 2026:
 | Health-check script and .log | [Script](scripts/health-check.mjs), [actual CI log](docs/evidence/health-check.log) |
 | Documentation and screenshots | This README, workflow diagram, and screenshots below |
 
-The first development run exposed a difference between flat and nested Vercel
-CLI JSON responses. The parser was corrected, regression tests were added,
-and subsequent preview and production runs passed. The links above identify
-actual verified runs rather than assuming every historical run succeeded.
-
 ## Run locally
 
 Install Node.js 24 or newer and Git. Clone the repository, then run:
