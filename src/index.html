@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A simple calculator built with JavaScript and delivered through GitHub Actions and Vercel.">
+  <title>DevOps Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <main>
+    <header><span class="mark" aria-hidden="true">=</span><span>DEVOPS LAB <span class="muted">/ 01</span></span></header>
+    <section class="intro"><p class="eyebrow">SMALL APP. COMPLETE PIPELINE.</p><h1>Make it<br><span>add up.</span></h1><p>A little everyday math, delivered continuously.<br>Built with JavaScript. Shipped with confidence.</p><div class="tags"><span>HTML + CSS + JS</span><span>GitHub Actions → Vercel</span></div></section>
+    <section class="calculator" aria-label="Calculator">
+      <div class="calculator-top"><span>CALCULATOR</span><span class="dot" aria-hidden="true"></span></div>
+      <div class="screen"><p id="expression">Ready when you are</p><output id="display" aria-live="polite" aria-atomic="true">0</output></div>
+      <div class="keys">
+        <button data-value="clear" class="utility">AC</button><button data-value="sign" class="utility" aria-label="Change sign">±</button><button data-value="back" class="utility" aria-label="Backspace">⌫</button><button data-value="/" class="operator" aria-label="Divide">÷</button>
+        <button data-value="7">7</button><button data-value="8">8</button><button data-value="9">9</button><button data-value="*" class="operator" aria-label="Multiply">×</button>
+        <button data-value="4">4</button><button data-value="5">5</button><button data-value="6">6</button><button data-value="-" class="operator" aria-label="Subtract">−</button>
+        <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button data-value="+" class="operator" aria-label="Add">+</button>
+        <button data-value="0" class="zero">0</button><button data-value=".">.</button><button data-value="=" class="equals" aria-label="Equals">=</button>
+      </div>
+      <p class="hint">Keyboard friendly · Enter to calculate · Esc to clear</p>
+    </section>
+    <footer><span>COMMIT → BUILD → TEST → DEPLOY</span><span>University DevOps project</span></footer>
+  </main>
+</body>
+</html>
