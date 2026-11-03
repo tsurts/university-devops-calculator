@@ -15,7 +15,10 @@ function clear() {
 }
 function input(value) {
   if (failed) clear();
-  if (fresh) { entry = '0'; fresh = false; }
+  if (fresh) {
+    entry = '0'; fresh = false;
+    if (!operator) expression.textContent = 'Ready when you are';
+  }
   if (value === '.') {
     if (!entry.includes('.')) entry += '.';
   } else if (entry.replace(/[-.]/g, '').length < 12) {
