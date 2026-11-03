@@ -7,6 +7,12 @@ assignment. Supports addition, subtraction, multiplication, division, decimals,
 negative numbers, backspace, and keyboard input. Operations evaluate from left
 to right, as on a basic calculator.
 
+The **Second calculator** button reveals an independent calculator from behind
+the first, sliding it to the left on desktop (stacking below on small screens).
+Click or focus either calculator to direct keyboard input to it. **Tank** hides
+the calculators and shows a decorative tank cutout. **Back to calculator**
+restores the calculators and their values.
+
 - **Live application:** https://university-devops-calculator.vercel.app
 - **Public repository:** https://github.com/tsurts/university-devops-calculator
 - **Workflow:** [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
@@ -168,7 +174,7 @@ and [exported output](docs/evidence/unit-tests.txt).
 Captured from https://university-devops-calculator.vercel.app after exercising
 the calculator buttons; the display shows 0.1 + 0.2 = 0.3.
 
-![Running production calculator](docs/screenshots/calculator-production.png)
+![Two independently working calculators](docs/screenshots/calculator.png)
 
 ## Branch workflow
 
