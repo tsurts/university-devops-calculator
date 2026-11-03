@@ -76,17 +76,19 @@ jobs:
           args=(--prebuilt --yes --json --token "$VERCEL_TOKEN")
           if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then args+=(--prod); fi
           vercel deploy "${args[@]}" > deployment.json
-          url=$(node --input-type=module -e 'import fs from "node:fs"; const r = JSON.parse(fs.readFileSync("deployment.json", "utf8")); if (r.status !== "ok" || r.deployment?.readyState !== "READY") throw new Error("Deployment not ready"); console.log(r.deployment.productionUrl || r.deployment.url);')
+          url=$(node scripts/deployment-url.mjs deployment.json)
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployment: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Check deployed application
         env:
           APP_URL: ${{ steps.deploy.outputs.url }}
         run: node scripts/health-check.mjs
-      - name: Preserve health-check log
+      - name: Preserve deployment evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: health-check-log
-          path: logs/health-check.log
+          path: |
+            logs/health-check.log
+            deployment.json
           if-no-files-found: warn
